@@ -1,4 +1,4 @@
-// Inform the background page that 
+// Inform the background page that
 // this tab should have a page-action
 chrome.runtime.sendMessage({
   from:    'keep-content',
@@ -12,17 +12,25 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 command: 'addToHistoryAndSetCurrentUrl',
                 url: request.url
             });
-        } else { 
+        } else {
             sendResponse({
                 command: 'setTemporaryUrl',
                 url: request.url
             });
         }
     }
-    //here we get the new 
+    //here we get the new
 });
 
 Mousetrap.bind(['ctrl+['], (e, combo) => {
+  showHistoryPopup();
+});
+
+Mousetrap.bind(['ctrl'], (e, combo) => {
+  closeHistoryPopup();
+}, 'keyup');
+
+Mousetrap.bind(['ctrl+x'], (e, combo) => {
     console.log('Combo ' + combo);
     chrome.runtime.sendMessage({
         from: 'keep-content',

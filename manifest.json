@@ -17,6 +17,7 @@
             ],
             "js": [
                 "mousetrap.js",
+                "history-ui.js",
                 "content.js"
             ],
             "run_at": "document_idle",
