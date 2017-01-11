@@ -1,38 +1,46 @@
 // Inform the background page that 
 // this tab should have a page-action
-chrome.runtime.sendMessage({
-  from:    'keep-content',
-  command: 'showPageAction'
-});
+
+Mousetrap.prototype.stopCallback = (e, el, combo) => false; // Should be only for defined combinations, not for everything
+
+sendCommandToBackground('showPageAction', {});
+
+function sendCommandToBackground(command, data, responseCb) {
+    chrome.runtime.sendMessage({
+        from: 'keep-content',
+        command: command,
+        data: data
+    }, responseCb);
+}
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.from === 'keep-bg') {
-        if (request.url.indexOf('#LIST') !== -1) {
-            sendResponse({
-                command: 'addToHistoryAndSetCurrentUrl',
-                url: request.url
-            });
+        if (request.url.indexOf('#LIST') !== -1 ||
+            request.url.indexOf('#NOTE') !== -1) {
+            sendCommandToBackground('addUrlToHistory', { url: request.url });
         } else { 
-            sendResponse({
-                command: 'setTemporaryUrl',
-                url: request.url
-            });
+            sendCommandToBackground('addDummyUrlToHistory', { url: request.url });
         }
     }
-    //here we get the new 
 });
 
 Mousetrap.bind(['ctrl+['], (e, combo) => {
-    console.log('Combo ' + combo);
-    chrome.runtime.sendMessage({
-        from: 'keep-content',
-        command: 'goBackInHistory'
-    }, function(response) {
-        location.href = response.url;
+    console.log('GO BACK');
+    sendCommandToBackground('goBack', {}, function(response) {
+        if (response.url) {
+            location.href = response.url;
+        }
     });
 });
 
-Mousetrap.stopCallback = (e, el, combo) => false; // Should be only for defined combinations, not for everything
+Mousetrap.bind(['ctrl+]'], (e, combo) => {
+    console.log('GO FOWARD');
+    sendCommandToBackground('goForward', {}, function(response) {
+        if (response.url) {
+            location.href = response.url;
+        }
+    });
+});
 
 // var ctrlComboActive;
 

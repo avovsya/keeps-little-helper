@@ -22,14 +22,16 @@ History.prototype.addItem = function (url) {
     }
 
     // Set previous history item for a new item
-    if (!currentItem.dummyItem) {
+    if (currentItem && !currentItem.dummyItem) {
         newItem.prev = currentItem;
     } else {
         newItem.prev = previousItem;
     }
 
     // Previous item should know about "next" item
-    newItem.prev.next = newItem;
+    if (newItem.prev) {
+        newItem.prev.next = newItem;
+    }
 
     this.history.currentItem = newItem;
 
@@ -40,7 +42,7 @@ History.prototype.addItem = function (url) {
 
 // Add item that won't be a part of a history, but user should be able to 
 // "go back" from it
-History.protorype.addDummyItem = function (url) {
+History.prototype.addDummyItem = function (url) {
     var currentItem = this.history.currentItem;
     var previousItem = currentItem && currentItem.prev;
 
@@ -49,7 +51,7 @@ History.protorype.addDummyItem = function (url) {
         dummyItem: true
     };
 
-    if (!currentItem.dummyItem) {
+    if (currentItem && !currentItem.dummyItem) {
         newItem.prev = currentItem;
     } else {
         newItem.prev = previousItem;
