@@ -3,6 +3,7 @@ var History = function () {
     this.history = {
     };
 }
+
 History.prototype.getNewId = function () {
     this.lastId += 1;
     return this.lastId;
@@ -24,11 +25,6 @@ History.prototype.getHistory = function () {
         item = item.next;
     } while(item)
 
-    // If current item is a dummy item, mark the last item in history as "current"
-    if (this.history.currentItem.dummyItem) {
-        items[items.length - 1].current = true;
-    }
-
     return items;
 }
 
@@ -45,10 +41,6 @@ History.prototype.goToId = function (data) {
     return false;
 }
 
-// Add item to history
-// Do not add item if it's the same as the current(not dummy) item
-// Remove dummy item
-// If it's a first item in the history, mark it as first
 History.prototype.addItem = function (data) {
     var currentItem = this.history.currentItem;
     var previousItem = currentItem && currentItem.prev;
@@ -66,15 +58,11 @@ History.prototype.addItem = function (data) {
     }
 
     // Set previous history item for a new item
-    if (currentItem && !currentItem.dummyItem) {
+    if (currentItem) {
         newItem.prev = currentItem;
-    } else {
-        newItem.prev = previousItem;
-    }
 
-    // Previous item should know about "next" item
-    if (newItem.prev) {
-        newItem.prev.next = newItem;
+        // Previous item should know about "next" item
+        currentItem.next = newItem;
     }
 
     this.history.currentItem = newItem;
@@ -84,39 +72,25 @@ History.prototype.addItem = function (data) {
     }
 }
 
-// Add item that won't be a part of a history, but user should be able to 
-// "go back" from it
-History.prototype.addDummyItem = function (data) {
-    var currentItem = this.history.currentItem;
-    var previousItem = currentItem && currentItem.prev;
-
-    var newItem = {
-        url: data.url,
-        dummyItem: true
-    };
-
-    if (currentItem && !currentItem.dummyItem) {
-        newItem.prev = currentItem;
-    } else {
-        newItem.prev = previousItem;
-    }
-
-    this.history.currentItem = newItem;
-}
-
-// Set current item as "next" item, if it's not a dummy item
+// Set current item as "next" item
 // Set previous item as "current" item
 // Return "current" item url
-History.prototype.goBack = function () {
+History.prototype.goBack = function (data) {
     var currentItem = this.history.currentItem;
     var previousItem = currentItem && currentItem.prev;
+
+    // If current url doesn't match currentItem.url, user have
+    // closed current note. Go to current note
+    if (currentItem && currentItem.url !== data.currentUrl) {
+        return currentItem.url;
+    }
 
     if (previousItem) {
         this.history.currentItem = previousItem;
         return previousItem.url;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 // Set current item's "next" item as current
@@ -128,7 +102,7 @@ History.prototype.goForward = function () {
     if (nextItem) {
         this.history.currentItem = nextItem;
         return nextItem.url;
-    } else {
-        return false;
     }
+
+    return false;
 }

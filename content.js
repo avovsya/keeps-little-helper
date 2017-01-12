@@ -13,6 +13,9 @@ function sendCommandToBackground(command, data, responseCb) {
     }, responseCb);
 }
 
+// Handle URL change
+// If new URL points to a note -> issue command for bg script to add it to history
+// Otherwise -> do nothing
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.from === 'keep-bg') {
         if (request.url.indexOf('#LIST') !== -1 ||
@@ -21,9 +24,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 url: request.url,
                 meta: { noteTitle: getNoteTitle() }
             });
-        } else { 
-            sendCommandToBackground('addDummyUrlToHistory', { url: request.url });
-        }
+        } 
     }
 });
 
@@ -31,26 +32,17 @@ function goToId(id) {
     sendCommandToBackground('goToId', { id: id });
 }
 
-// Mousetrap.bind(['ctrl+['], (e, combo) => {
-//     console.log('GO BACK');
-//     sendCommandToBackground('getHistory', {}, function(response) {
-//         console.log('HISTORY: ', response);
-//     });
-// });
-
 Mousetrap.bind(['ctrl+['], (e, combo) => {
-    console.log('GO BACK');
-    // sendCommandToBackground('goBack', {}, function(response) {
-    //     if (response.url) {
-    //         location.href = response.url;
-    //     }
-    // });
+    sendCommandToBackground('goBack', { currentUrl: window.location.href }, function(response) {
+        if (response.url) {
+            location.href = response.url;
+        }
+    });
 
-    renderHistoryTemplate({});
+    // renderHistoryTemplate({});
 });
 
 Mousetrap.bind(['ctrl+]'], (e, combo) => {
-    console.log('GO FOWARD');
     sendCommandToBackground('goForward', {}, function(response) {
         if (response.url) {
             location.href = response.url;

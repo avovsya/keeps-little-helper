@@ -10,28 +10,24 @@ var commands = {
         var tabHistory = watchedTabs[tabId];
         tabHistory.addItem(data.data);
     },
-    addDummyUrlToHistory: function (tabId, data) {
-        var tabHistory = watchedTabs[tabId];
-        tabHistory.addDummyItem(data.data);
-    },
     goBack: function (tabId, data, sendResponse) {
         var tabHistory = watchedTabs[tabId];
-        var prevUrl = tabHistory.goBack();
+        var prevUrl = tabHistory.goBack(data.data);
         sendResponse({ url: prevUrl });
+    },
+    goForward: function (tabId, data, sendResponse) {
+        var tabHistory = watchedTabs[tabId];
+        var nextUrl = tabHistory.goForward(data.data);
+        sendResponse({ url: nextUrl });
+    },
+    getHistory: function (tabId, data, sendResponse) {
+        sendResponse({ history: watchedTabs[tabId].getHistory() })
     },
     goToId: function (tabId, data, sendResponse) {
         var tabHistory = watchedTabs[tabId];
         var url = tabHistory.goToId(data.data);
         sendResponse({ url: url });
     },
-    goForward: function (tabId, data, sendResponse) {
-        var tabHistory = watchedTabs[tabId];
-        var nextUrl = tabHistory.goForward();
-        sendResponse({ url: nextUrl });
-    },
-    getHistory: function (tabId, data, sendResponse) {
-        sendResponse({ history: watchedTabs[tabId].getHistory() })
-    }
 }
 
 // Listen for commands from content script
