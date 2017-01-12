@@ -17,20 +17,36 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.from === 'keep-bg') {
         if (request.url.indexOf('#LIST') !== -1 ||
             request.url.indexOf('#NOTE') !== -1) {
-            sendCommandToBackground('addUrlToHistory', { url: request.url });
+            sendCommandToBackground('addUrlToHistory', {
+                url: request.url,
+                meta: { noteTitle: getNoteTitle() }
+            });
         } else { 
             sendCommandToBackground('addDummyUrlToHistory', { url: request.url });
         }
     }
 });
 
+function goToId(id) {
+    sendCommandToBackground('goToId', { id: id });
+}
+
+// Mousetrap.bind(['ctrl+['], (e, combo) => {
+//     console.log('GO BACK');
+//     sendCommandToBackground('getHistory', {}, function(response) {
+//         console.log('HISTORY: ', response);
+//     });
+// });
+
 Mousetrap.bind(['ctrl+['], (e, combo) => {
     console.log('GO BACK');
-    sendCommandToBackground('goBack', {}, function(response) {
-        if (response.url) {
-            location.href = response.url;
-        }
-    });
+    // sendCommandToBackground('goBack', {}, function(response) {
+    //     if (response.url) {
+    //         location.href = response.url;
+    //     }
+    // });
+
+    renderHistoryTemplate({});
 });
 
 Mousetrap.bind(['ctrl+]'], (e, combo) => {

@@ -16,7 +16,10 @@
                 "*://keep.google.com/*"
             ],
             "js": [
-                "mousetrap.js",
+                "lib/jquery.min.js",
+                "lib/lodash.min.js",
+                "lib/mousetrap.js",
+                "history-ui.js",
                 "content.js"
             ],
             "run_at": "document_idle",

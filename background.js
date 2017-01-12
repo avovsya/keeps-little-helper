@@ -8,24 +8,33 @@ var commands = {
     },
     addUrlToHistory: function (tabId, data) {
         var tabHistory = watchedTabs[tabId];
-        tabHistory.addItem(data.data.url);
+        tabHistory.addItem(data.data);
     },
     addDummyUrlToHistory: function (tabId, data) {
         var tabHistory = watchedTabs[tabId];
-        tabHistory.addDummyItem(data.data.url);
+        tabHistory.addDummyItem(data.data);
     },
     goBack: function (tabId, data, sendResponse) {
         var tabHistory = watchedTabs[tabId];
         var prevUrl = tabHistory.goBack();
         sendResponse({ url: prevUrl });
     },
+    goToId: function (tabId, data, sendResponse) {
+        var tabHistory = watchedTabs[tabId];
+        var url = tabHistory.goToId(data.data);
+        sendResponse({ url: url });
+    },
     goForward: function (tabId, data, sendResponse) {
         var tabHistory = watchedTabs[tabId];
         var nextUrl = tabHistory.goForward();
         sendResponse({ url: nextUrl });
+    },
+    getHistory: function (tabId, data, sendResponse) {
+        sendResponse({ history: watchedTabs[tabId].getHistory() })
     }
 }
 
+// Listen for commands from content script
 chrome.runtime.onMessage.addListener(function (msg, sender, sendResponse) {
   // First, validate the message's structure
   if (msg.from === 'keep-content') {
@@ -46,10 +55,5 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
             command: 'urlChanged',
             url: tab.url
         });
-        // , function (response) {
-        //     if (response && response.command) {
-        //         commands[response.command](tab.id, response);
-        //     }
-        // });
     }
 });
