@@ -20,7 +20,11 @@
                 "lib/lodash.min.js",
                 "lib/mousetrap.js",
                 "history-ui.js",
+                "shortcut-handler.js",
                 "content.js"
+            ],
+            "css": [
+                "content.css"
             ],
             "run_at": "document_idle",
             "all_frames": false

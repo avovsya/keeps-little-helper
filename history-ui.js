@@ -1,46 +1,37 @@
-var template;
-function getNoteTitle() {
-  var pins = document.querySelectorAll('[aria-pressed][tabindex="0"] svg');
-  var editables = pins[pins.length-1].parentNode.parentElement.querySelectorAll('[contenteditable]');
+var modalTimeout;
 
-  if (!editables || editables.length === 0) {
-  }
-
-  for (var i = 0; i < editables.length; i++) {
-    if (editables[i].textContent && editables[i].textContent.length > 0) {
-      return editables[i].textContent;
-    }
-  }
-
-  return window.location.href;
+function createHistoryModal() {
+    $("body").append(`
+    <div class="keeps-helper keeps-modal keeps-history-modal">
+      <div class="keeps-helper keeps-modal-content">
+        <ul class="keeps-history-list">
+        </ul>
+      </div>
+    </div>`)
 }
 
-function getTemplate(cb) {
-    if (!template) {
-        document.body.innerHTML += '<div id="keeps-helper-history-template"></div>';
-        $("#keeps-helper-history-template").load('templates/history-ui.tmpl.html', function () {
-            template = $("#keeps-helper-history-template").html();
-            return cb(template)
-        });
-    }
-
-    return cb(template);
-}
-
-function renderHistoryTemplate(history) {
-    getTemplate((template) => {
-        var templateFn = _.template(template);
-        $("body").append(templateFn(history))
+function drawHistoryIntoModal(history, selectedItemIndex) {
+    $('.keeps-history-list').html('');
+    _.forEach(history, (item, i) => {
+        $('.keeps-history-list').append(`
+          <li class="${ i === selectedItemIndex ? 'keeps-selected-history-item' : '' }">
+            ${item.meta.noteTitle}
+          </li>
+        `);
     });
-};
+}
 
 function showHistoryPopup() {
-  document.body.innerHTML += '<dialog id="keeps-helper-history">This is a dialog.<br><button>Close</button></dialog>';
-  var dialog = document.querySelector("#keeps-helper-history");
-  dialog.showModal();
+    modalTimeout = setTimeout(function () {
+        $('.keeps-history-modal').show();
+    }, 200);
 }
-function closeHistoryPopup() {
-  var dialog = document.querySelector("#keeps-helper-history");
-  dialog.close();
-  dialog.remove();
+
+function hideHistoryPopup() {
+    clearTimeout(modalTimeout);
+    $('.keeps-history-modal').hide();
 }
+
+$(function () {
+    createHistoryModal();
+})

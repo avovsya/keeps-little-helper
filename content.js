@@ -32,23 +32,21 @@ function goToId(id) {
     sendCommandToBackground('goToId', { id: id });
 }
 
-Mousetrap.bind(['ctrl+['], (e, combo) => {
-    sendCommandToBackground('goBack', { currentUrl: window.location.href }, function(response) {
-        if (response.url) {
-            location.href = response.url;
-        }
-    });
+function getNoteTitle() {
+  var pins = document.querySelectorAll('[aria-pressed][tabindex="0"] svg');
+  var editables = pins[pins.length-1].parentNode.parentElement.querySelectorAll('[contenteditable]');
 
-    // renderHistoryTemplate({});
-});
+  if (!editables || editables.length === 0) {
+  }
 
-Mousetrap.bind(['ctrl+]'], (e, combo) => {
-    sendCommandToBackground('goForward', {}, function(response) {
-        if (response.url) {
-            location.href = response.url;
-        }
-    });
-});
+  for (var i = 0; i < editables.length; i++) {
+    if (editables[i].textContent && editables[i].textContent.length > 0) {
+      return editables[i].textContent;
+    }
+  }
+
+  return window.location.href;
+}
 
 // var ctrlComboActive;
 
