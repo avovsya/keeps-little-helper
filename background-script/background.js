@@ -44,8 +44,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         changeInfo &&
         changeInfo.status == "complete") {
 
-        console.log("BG. Tab updated: " + tab.url);
-
         chrome.tabs.sendMessage(tabId, {
             from: 'keep-bg',
             command: 'urlChanged',

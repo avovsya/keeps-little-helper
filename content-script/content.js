@@ -47,17 +47,3 @@ function getNoteTitle() {
 
   return window.location.href;
 }
-
-// var ctrlComboActive;
-
-// Mousetrap.bind(['ctrl+[', 'ctrl+]'], (e, combo) => {
-//     console.log('Combo ' + combo);
-//     ctrlComboActive = combo;
-// });
-
-// Mousetrap.bind(['ctrl'], (e, combo) => {
-//     if (ctrlComboActive) {
-//         console.log('Combo released ' + ctrlComboActive);
-//         ctrlComboActive = false;
-//     }
-// }, 'keyup');

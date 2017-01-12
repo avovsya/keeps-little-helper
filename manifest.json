@@ -1,13 +1,13 @@
 {
     "manifest_version": 2,
-    "name": "Keep's Helper",
+    "name": "Keep's Little Helper",
     "version": "0.0.1",
     "offline_enabled": true,
     "background": {
         "persistent": false,
         "scripts": [
-            "history.js",
-            "background.js"
+            "background-script/history.js",
+            "background-script/background.js"
         ]
     },
     "content_scripts": [
@@ -19,21 +19,21 @@
                 "lib/jquery.min.js",
                 "lib/lodash.min.js",
                 "lib/mousetrap.js",
-                "history-ui.js",
-                "shortcut-handler.js",
-                "content.js"
+                "content-script/history-ui.js",
+                "content-script/shortcut-handler.js",
+                "content-script/content.js"
             ],
             "css": [
-                "content.css"
+                "content-script/content.css"
             ],
             "run_at": "document_idle",
             "all_frames": false
         }
     ],
     "page_action": {
-        "default_title": "Keep's Helper",
-        "default_icon": "icon.png",
-        "default_popup": "popup.html"
+        "default_title": "Keep's Little Helper",
+        "default_icon": "popup-script/icon.png",
+        "default_popup": "popup-script/popup.html"
     },
     // No special permissions required...
     "permissions": [
