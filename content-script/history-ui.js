@@ -21,15 +21,20 @@ window.historyUi = {};
     }
 
     function goBackOneItemInHistory(state) {
-        if (state.historyUi.selectedItemIndex === 0) return;
-
-        state.historyUi.selectedItemIndex -= 1;
+        if (state.historyUi.selectedItemIndex === 0) {
+            state.historyUi.selectedItemIndex = state.historyUi.noteHistory.length - 1;
+        } else {
+            state.historyUi.selectedItemIndex -= 1;
+        }
     }
 
     function goForwardOneItemInHistory(state) {
-        if (state.historyUi.selectedItemIndex === (state.historyUi.noteHistory.length - 1)) return;
+        if (state.historyUi.selectedItemIndex === (state.historyUi.noteHistory.length - 1)) {
+            state.historyUi.selectedItemIndex = 0;
+        } else {
+            state.historyUi.selectedItemIndex += 1;
+        }
 
-        state.historyUi.selectedItemIndex += 1;
     }
 
     function createHistoryModal() {
@@ -53,10 +58,19 @@ window.historyUi = {};
         });
     }
 
-    function showHistoryPopup() {
+    function showHistoryPopupImmediately() {
+        clearTimeout(modalTimeout);
+        showHistoryPopup();
+    }
+
+    function showDelayedHistoryPopup() {
         modalTimeout = setTimeout(function () {
-            $('.keeps-history-modal').show();
+            showHistoryPopup();
         }, 200);
+    }
+
+    function showHistoryPopup() {
+        $('.keeps-history-modal').show();
     }
 
     function hideHistoryPopup() {
@@ -72,12 +86,13 @@ window.historyUi = {};
 
                 state.historyUi.noteHistory = noteHistory;
                 state.historyUi.selectedItemIndex = selectedItemIndex;
-                showHistoryPopup();
+                showDelayedHistoryPopup();
                 state.historyUi.active = true;
                 moveFn(state);
                 drawHistoryIntoModal(state);
             });
         } else {
+            showHistoryPopupImmediately();
             moveFn(state);
             drawHistoryIntoModal(state);
         }
