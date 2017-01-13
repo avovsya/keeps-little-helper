@@ -64,6 +64,25 @@ window.historyUi = {};
         $('.keeps-history-modal').hide();
     }
 
+    function moveInHistory(state, direction) {
+        var moveFn = direction === 'forward' ? goForwardOneItemInHistory : goBackOneItemInHistory;
+        if (!state.historyUi.active) {
+            getHistory(function (noteHistory, selectedItemIndex) {
+                if (!noteHistory || noteHistory.length < 2) return;
+
+                state.historyUi.noteHistory = noteHistory;
+                state.historyUi.selectedItemIndex = selectedItemIndex;
+                showHistoryPopup();
+                state.historyUi.active = true;
+                moveFn(state);
+                drawHistoryIntoModal(state);
+            });
+        } else {
+            moveFn(state);
+            drawHistoryIntoModal(state);
+        }
+    }
+
     historyUi.initState = function (state) {
         state.historyUi = {
             noteHistory: null,
@@ -73,40 +92,18 @@ window.historyUi = {};
     };
 
     historyUi.shortcutBackwards = function (e, combo, state) {
-        if (!state.historyUi.active) {
-            state.historyUi.active = true;
-            showHistoryPopup();
-            getHistory(function (noteHistory, selectedItemIndex) {
-                state.historyUi.noteHistory = noteHistory;
-                state.historyUi.selectedItemIndex = selectedItemIndex;
-                goBackOneItemInHistory(state);
-                drawHistoryIntoModal(state);
-            });
-        } else {
-            goBackOneItemInHistory(state);
-            drawHistoryIntoModal(state);
-        }
+        moveInHistory(state, 'back')
     };
 
     historyUi.shortcutForwards = function (e, combo, state) {
-        if (!state.historyUi.active) {
-            state.historyUi.active = true;
-            showHistoryPopup();
-            getHistory(function (noteHistory, selectedItemIndex) {
-                state.historyUi.noteHistory = noteHistory;
-                state.historyUi.selectedItemIndex = selectedItemIndex;
-                goForwardOneItemInHistory(state);
-                drawHistoryIntoModal(state);
-            });
-        } else {
-            goForwardOneItemInHistory(state);
-            drawHistoryIntoModal(state);
-        }
+        moveInHistory(state, 'forward')
     };
 
     historyUi.shortcutReleased = function (e, combo, state) {
-        state.historyUi.active = false;
-        hideHistoryPopup();
-        redirectToItem(state.historyUi.noteHistory[state.historyUi.selectedItemIndex]);
+        if (state.historyUi.active) {
+            state.historyUi.active = false;
+            hideHistoryPopup();
+            redirectToItem(state.historyUi.noteHistory[state.historyUi.selectedItemIndex]);
+        }
     };
 })();
